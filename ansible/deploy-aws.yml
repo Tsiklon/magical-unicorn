@@ -1,9 +1,9 @@
 - hosts: localhost
-    vars:
-      ansible_python_interpreter: /usr/bin/python3
-      working_dir: '{{ ansible_env.HOME }}/gitstuff/magical-unicorn'
-      dockerfile_location: '{{ working_dir }}/dockerfile'
-      apachedocs: '{{ working_dir }}/apache'
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    working_dir: '{{ ansible_env.HOME }}/gitstuff/magical-unicorn'
+    dockerfile_location: '{{ working_dir }}/dockerfile'
+    apachedocs: '{{ working_dir }}/apache'
 
   tasks:
     - name: Update + Upgrade packages
