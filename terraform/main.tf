@@ -134,9 +134,9 @@ resource "aws_instance" "web" {
   # this should be on port 80
   provisioner "remote-exec" {
     inline = [
-      "sudo apt update",
-      "sudo apt -y install git ansible",
       "mkdir /home/ubuntu/gitstuff",
+      "sudo apt update && sudo apt update",
+      "sudo apt -y install git ansible",
       "git clone https://github.com/Tsiklon/magical-unicorn /home/ubuntu/gitstuff/magical-unicorn",
       "ansible-playbook -i /home/ubuntu/gitstuff/magical-unicorn/ansible/hosts -b /home/ubuntu/gitstuff/magical-unicorn/ansible/deploy-aws.yml >> /home/ubuntu/deploy.log",
     ]
