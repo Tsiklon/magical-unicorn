@@ -1,0 +1,16 @@
+Diagram of web app architecture 
+
+  {{{ Load Balancer }}}
+          |
+  {{{ Web Servers }}}
+          |      
+  {{{ Back End }}} - {{{ Storage }}}
+
+
+ Tasks + Tools
+  - Spin up AWS resources - To do 
+   - LB, Node 
+  - configure node - done
+   - Docker, push dockerfile + data files, set local firewall, set selinux(if in use)
+  - configure container - done
+   - run dockerfile 
