@@ -1,0 +1,106 @@
+- hosts: all
+  vars:
+     ansible_python_interpreter: /usr/bin/python3
+     working_dir: '{{ ansible_env.HOME }}/apache-docker'
+     dockerfile_location: ''
+
+  vars_prompt:
+    - name: "dockerfile"
+      prompt: "Path to dockerfile"
+      private: no
+    - name: "apachedocs"
+      prompt: "Path to Apache Documents"
+      private: no
+
+  tasks:
+    - name: Update + Upgrade packages
+      apt:
+        update_cache: yes
+        upgrade: full
+
+    - name: Configure Docker Repo key
+      apt_key: 
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: add Docker Repo
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+        filename: 'docker-ce'
+
+    - name: refresh repositories
+      apt: 
+        update_cache: yes
+
+    - name: Install packages
+      apt:
+        name: ['docker-ce','python3-pip']
+        state: present
+
+    - name: Install docker pip module
+      pip:
+        name: docker
+        state: present
+
+
+    - name: Confirm Docker is started
+      systemd:
+        name: docker
+        state: started 
+
+    - name: Confirm Working directories exist and create if absent 
+      file:
+        path: '{{ working_dir }}'
+        state: directory
+    
+    - name: Confirm Dockerfile exists
+      stat:
+        path: '{{ working_dir }}/dockerfile'
+      register: dockerfile_location
+    
+    - name: Copy dockerfile
+      copy: 
+        src: '{{ dockerfile }}'
+        dest: '{{ working_dir }}/dockerfile'
+      when: dockerfile_location.stat.exists == false
+
+    - name: Confirm Dockerfile exists
+      stat:
+        path: '{{ working_dir }}/dockerfile'
+      register: dockerfile_location
+
+    - name: Confirm apache directory exists
+      stat:
+        path: '{{ working_dir }}/apache'
+      register: apache_location
+      ignore_errors: yes
+
+    - name: Copy Apache directory 
+      copy:
+        src: '{{ apachedocs }}'
+        dest: '{{ working_dir }}'
+        directory_mode:
+
+    - name: Confirm apache directory exists
+      stat:
+        path: '{{ working_dir }}/apache'
+      register: apache_location
+
+##    - name: Build docker image 
+##      shell: 'docker build -t apache-docker -f {{ dockerfile_location.stat.path }} {{ ansible_env.HOME }}'
+   
+    - name: Build Docker Image
+      docker_image:
+        dockerfile: '{{ dockerfile_location.stat.path }}'
+        path: '{{ working_dir }}'
+        name: apache-docker
+        state: present
+
+    - name: Start Container 'apache-docker' 
+      docker_container:
+        image: apache-docker
+        name: apache-docker
+        published_ports: 80:80
+        state: started
+
