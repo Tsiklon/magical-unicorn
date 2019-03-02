@@ -132,10 +132,13 @@ resource "aws_instance" "web" {
   # remote provisioner to create the required directories
   # install the required packages and clone the correct repositories
   # execute the deployment playbook
+  
+  # apt update is run twice to guarantee that the repos are updated correctly
+  # previous testing had ansible fail to install several times without this.
   provisioner "remote-exec" {
     inline = [
       "mkdir /home/ubuntu/gitstuff",
-      "sudo apt update && sudo apt update",
+      "sudo apt update && sudo apt update", 
       "sudo apt -y install git ansible",
       "git clone https://github.com/Tsiklon/magical-unicorn /home/ubuntu/gitstuff/magical-unicorn",
       "ansible-playbook -i /home/ubuntu/gitstuff/magical-unicorn/ansible/hosts -b /home/ubuntu/gitstuff/magical-unicorn/ansible/deploy-aws.yml >> /home/ubuntu/deploy.log",
