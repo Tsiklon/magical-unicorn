@@ -29,8 +29,8 @@ resource "aws_subnet" "default" {
 
 # A security group for the ELB so it is accessible via the web
 resource "aws_security_group" "elb" {
-  name        = "terraform_example_elb"
-  description = "Used in the terraform"
+  name        = "magical_unicorn_elb"
+  description = "MU - ELB - ingress *:80:80 - egress any:any"
   vpc_id      = "${aws_vpc.default.id}"
 
   # HTTP access from anywhere
@@ -53,8 +53,8 @@ resource "aws_security_group" "elb" {
 # Our default security group to access
 # the instances over SSH and HTTP
 resource "aws_security_group" "default" {
-  name        = "terraform_example"
-  description = "Used in the terraform"
+  name        = "magical_unicorn_nodes"
+  description = "MU - Node - ingress *:22:22, 10.0.0.0/16:80:80 - egress any:any"
   vpc_id      = "${aws_vpc.default.id}"
 
   # SSH access from anywhere
@@ -129,9 +129,9 @@ resource "aws_instance" "web" {
   # backend instances.
   subnet_id = "${aws_subnet.default.id}"
 
-  # We run a remote provisioner on the instance after creating it.
-  # In this case, we just install nginx and start it. By default,
-  # this should be on port 80
+  # remote provisioner to create the required directories
+  # install the required packages and clone the correct repositories
+  # execute the deployment playbook
   provisioner "remote-exec" {
     inline = [
       "mkdir /home/ubuntu/gitstuff",
